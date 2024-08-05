@@ -49,7 +49,7 @@ if nodo is not None:
         TypeMapping = {1: "modbus.point.AnalogInput", 2: "modbus.point.DigitalInput"}
         TypeStr = TypeMapping.get(Type)
         
-        report += template_2.format(Description=Description, Name=Name, Type=TypeStr, ModReg=ModReg, RegType=RegType)
+        report += template_2.format(Description=Description, Name=Name, Type=TypeStr, ModReg=int(ModReg)+1, RegType=RegType)
 
 report += '''</OI>
 </OI></ExportedObjects></ObjectSet>'''\
