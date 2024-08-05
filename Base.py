@@ -10,7 +10,8 @@ template_1 = '''<ObjectSet ExportMode="Standard" Note="TypesFirst" SemanticsFilt
   </MetaInformation>
 <ExportedObjects>
 <OI NAME="Convertor {ConvertorCode}" TYPE="modbus.network.{MSType}Device">
-    <OI NAME="M-Bus_Contori" TYPE="modbus.point.ModdbusRegisterGroup">'''
+    <OI NAME="M-Bus_Contori" TYPE="modbus.point.ModdbusRegisterGroup">
+    '''
 
 template_2 = '''<OI DESC="{Description}" NAME="{Name}" TYPE="{Type}">
     <PI Name="Gain" Value="1"/>
@@ -25,7 +26,7 @@ root = tree.getroot()
 
 convertorCode = input("What is the code of the convertor: ")
 MSType = int(input('''What is the type of the convertor: 
-               1. Master   2. Slave'''))
+               1. Master   2. Slave\n'''))
 MSTypeMapping = {1: "Master", 2: "Slave"}
 MSType = MSTypeMapping.get(MSType, "Master")
 
@@ -39,17 +40,20 @@ if nodo is not None:
         RegType = variable.attrib.get('Type')
         Description = variable.attrib.get('Desc')
         Name = input("A name for a variable: ")
-        Type = int(input('''Select the type of the variable: 
-                         1. Analog Input    2. Analog Output
-                         3. Digital Input   4. Digital Output 
+        if int(RegType) > 2:
+            Type = 1
+        else: 
+            Type = int(input('''Select the type of the variable: 
+                         1. Analog Input   2. Digital Input   
                          '''))
-        TypeMapping = {1: "modbus.point.AnalogInput", 2: "modbus.point.AnalogOutput", 3: "modbus.point.DigitalInput", 4: "modbus.point.DigitalOutput"}
-        TypeStr = TypeMapping.get(Type, "modbus.point.AnalogInput")
+        TypeMapping = {1: "modbus.point.AnalogInput", 2: "modbus.point.DigitalInput"}
+        TypeStr = TypeMapping.get(Type)
         
         report += template_2.format(Description=Description, Name=Name, Type=TypeStr, ModReg=ModReg, RegType=RegType)
 
 report += '''</OI>
 </OI></ExportedObjects></ObjectSet>'''\
+
 
 output_file = input("Enter the output file name: ")
 if not output_file.endswith(".xml"):
