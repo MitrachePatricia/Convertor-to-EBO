@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import os
 
 template_1 = '''<ObjectSet ExportMode="Standard" Note="TypesFirst" SemanticsFilter="Standard" Version="5.0.3.117">
   <MetaInformation>
@@ -20,13 +21,35 @@ template_2 = '''<OI DESC="{Description}" NAME="{Name}" TYPE="{Type}">
     <PI Name="RegisterType" Value="{RegType}"/>
   </OI>'''
 
-file = input('Enter the file name: ')
-tree = ET.parse(file)
+while True:
+    file = input('Enter the file name: ')
+    if not file.endswith(".xml"):
+        file += ".xml"
+    if not os.path.isfile(file):
+        print(f"Error: The file '{file}' does not exist. Please try again.")
+        continue
+    tree = ET.parse(file)
+    break
+
 root = tree.getroot()
 
-convertorCode = input("What is the code of the convertor: ")
-MSType = int(input('''What is the type of the convertor: 
+while True:
+    try:
+        convertorCode = input("What is the code of the convertor: ")
+        if convertorCode[:5] != 'HD670':
+            raise ValueError("Invalid convertor code. Please enter a valid convertor code.")
+        break
+    except ValueError as e:
+        print(e)
+while True:
+    try:
+        MSType = int(input('''What is the type of the convertor: 
                1. Master   2. Slave\n'''))
+        if MSType not in [1, 2]:
+            raise ValueError("Invalid selection. Please enter 1 or 2.")
+        break
+    except ValueError as e:
+        print(e)
 MSTypeMapping = {1: "Master", 2: "Slave"}
 MSType = MSTypeMapping.get(MSType, "Master")
 
@@ -42,18 +65,27 @@ if nodo is not None:
         Name = input("A name for a variable: ")
         if int(RegType) > 2:
             Type = 1
-        else: 
-            Type = int(input('''Select the type of the variable: 
-                         1. Analog Input   2. Digital Input   
-                         '''))
-        TypeMapping = {1: "modbus.point.AnalogInput", 2: "modbus.point.DigitalInput"}
-        TypeStr = TypeMapping.get(Type)
+        else:
+            while True:    
+               try:
+                   Type = int(input('''Select the type of the variable: 
+                              1. Analog Input   2. Digital Input   
+                            '''))
+                   if Type not in [1, 2]:
+                      raise ValueError("Invalid selection. Please enter 1 or 2.")
+                   break
+               except ValueError as e:
+                  print(e)
+
+TypeMapping = {1: "modbus.point.AnalogInput", 2: "modbus.point.DigitalInput"}
+
+
+TypeStr = TypeMapping.get(Type)
         
-        report += template_2.format(Description=Description, Name=Name, Type=TypeStr, ModReg=int(ModReg)+1, RegType=RegType)
+report += template_2.format(Description=Description, Name=Name, Type=TypeStr, ModReg=int(ModReg)+1, RegType=RegType)
 
 report += '''</OI>
-</OI></ExportedObjects></ObjectSet>'''\
-
+</OI></ExportedObjects></ObjectSet>'''
 
 output_file = input("Enter the output file name: ")
 if not output_file.endswith(".xml"):
