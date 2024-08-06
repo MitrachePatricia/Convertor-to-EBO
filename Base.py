@@ -58,11 +58,13 @@ report = template_1.format(ConvertorCode=convertorCode, MSType=MSType)
 nodo = root.find('Nodo')
 
 if nodo is not None:
+    counter = 0
     for variable in nodo.findall('Variabile'):
+        counter += 1
         ModReg = variable.attrib.get('ModReg')
         RegType = variable.attrib.get('Type')
         Description = variable.attrib.get('Desc')
-        Name = input("A name for a variable: ")
+        Name = input(f"A name for variable {counter}: ")
         if int(RegType) > 2:
             Type = 1
         else:
