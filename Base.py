@@ -12,18 +12,16 @@ template_1 = '''<?xml version="1.0" encoding="UTF-8"?>
     <ServerFullPath Value="/Server 1"/>
   </MetaInformation>
 <ExportedObjects>
-  <OI NAME="{gatewayName}" TYPE="modbus.network.GatewayNetwork">
-      <PI Name="IPAddress" Value="{ip}"/>
       <OI NAME="{DeviceName}" TYPE="modbus.network.{MSType}Device">
         <OI NAME="{RegisterGroupName}" TYPE="modbus.point.ModbusRegisterGroup">
     '''
 
-template_2 = '''<OI DESCR="{Description}" NAME="{Name}" TYPE="{Type}">
-     <PI Name="Gain" Value="1"/>
-     <PI Name="Offset" Value="0"/>
-     <PI Name="RegisterNumber" Value="{ModReg}"/>
-     <PI Name="RegisterType" Value="{RegType}"/>
-   </OI>'''
+template_2 = '''  <OI DESCR="{Description}" NAME="{Name}" TYPE="{Type}">
+       <PI Name="Gain" Value="1"/>
+       <PI Name="Offset" Value="0"/>
+       <PI Name="RegisterNumber" Value="{ModReg}"/>
+       <PI Name="RegisterType" Value="{RegType}"/>
+     </OI>'''
 
 while True:
     file = input('Enter the file name: ')
@@ -37,17 +35,17 @@ while True:
 
 root = tree.getroot()
 
-gatewayName = input("What is the name of the gateway: ")
+# gatewayName = input("What is the name of the gateway: ")
 DeviceName = input("What is the name of the device: ")
 
-while True:
-    try:
-        ip = input("What is the IP address of the gateway: ")
-        ipaddress.ip_address(ip)
-        print("Valid IP address.")
-        break 
-    except ValueError:
-        print("Invalid IP address. Please try again.")
+# while True:
+#     try:
+#         ip = input("What is the IP address of the gateway: ")
+#         ipaddress.ip_address(ip)
+#         print("Valid IP address.")
+#         break 
+#     except ValueError:
+#         print("Invalid IP address. Please try again.")
 
 while True:
     try:
@@ -63,7 +61,7 @@ MSType = MSTypeMapping.get(MSType, "Master")
 
 RegisterGroupName = input("What is the name of the register group: ")
 
-report = template_1.format(gatewayName=gatewayName, ip=ip ,DeviceName=DeviceName, MSType=MSType, RegisterGroupName=RegisterGroupName)
+report = template_1.format(DeviceName=DeviceName, MSType=MSType, RegisterGroupName=RegisterGroupName)
 
 nodo = root.find('Nodo')
 
@@ -74,25 +72,25 @@ if nodo is not None:
         ModReg = variable.attrib.get('ModReg')
         RegType = variable.attrib.get('Type')
         Description = variable.attrib.get('Desc')
-        Name = input(f"A name for variable {counter}: ")
-        while True:    
-              try:
-                  Type = int(input('''Select the type of the variable: 
-                               1. Analog Input   2. Analog Output
-                             '''))
-                  if Type not in [1, 2]:
-                      raise ValueError("Invalid selection. Please select an available type.")
-                  break
-              except ValueError as e:
-                  print(e)
-        TypeMapping = {1: "modbus.point.AnalogInput", 2: "modbus.point.AnalogOutput"}
-        TypeStr = TypeMapping.get(Type)
-        report += template_2.format(Description=Description, Name=Name, Type=TypeStr, ModReg=int(ModReg)+1, RegType=int(RegType)-1)
+        Name = variable.attrib.get('Desc','').split(' ')[0] + ' ' + str(counter)
+        TypeStr = "modbus.point.AnalogInput"
+        # while True:    
+        #       try:
+        #           Type = int(input('''Select the type of the variable: 
+        #                        1. Analog Input   2. Analog Output
+        #                      '''))
+        #           if Type not in [1, 2]:
+        #               raise ValueError("Invalid selection. Please select an available type.")
+        #           break
+        #       except ValueError as e:
+        #           print(e)
+        # TypeMapping = {1: "modbus.point.AnalogInput", 2: "modbus.point.AnalogOutput"}
+        # TypeStr = TypeMapping.get(Type)
+        report += template_2.format(Description=Description, Name=Name, Type=TypeStr, ModReg=int(ModReg)+1, RegType=RegType)
 
 report += ''' 
-    </OI>
-   </OI>
-  </OI>
+        </OI>
+      </OI>
 </ExportedObjects>
 
 </ObjectSet>'''
