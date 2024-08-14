@@ -12,16 +12,18 @@ template_1 = '''<?xml version="1.0" encoding="UTF-8"?>
     <ServerFullPath Value="/Server 1"/>
   </MetaInformation>
 <ExportedObjects>
-      <OI NAME="{DeviceName}" TYPE="modbus.network.{MSType}Device">
+      <OI NAME="{DeviceName}" TYPE="modbus.network.{MSType}Device">'''
+template_2='''
         <OI NAME="{RegisterGroupName}" TYPE="modbus.point.ModbusRegisterGroup">
     '''
 
-template_2 = '''  <OI DESCR="{Description}" NAME="{Name}" TYPE="{Type}">
-       <PI Name="Gain" Value="1"/>
-       <PI Name="Offset" Value="0"/>
-       <PI Name="RegisterNumber" Value="{ModReg}"/>
-       <PI Name="RegisterType" Value="{RegType}"/>
-     </OI>'''
+template_3 = '''       <OI DESCR="{Description}" NAME="{Name}" TYPE="{Type}">
+            <PI Name="Gain" Value="1"/>
+            <PI Name="Offset" Value="0"/>
+            <PI Name="RegisterNumber" Value="{ModReg}"/>
+            <PI Name="RegisterType" Value="{RegType}"/>
+          </OI>
+   '''
 
 while True:
     file = input('Enter the file name: ')
@@ -59,13 +61,13 @@ while True:
 MSTypeMapping = {1: "Master", 2: "Slave"}
 MSType = MSTypeMapping.get(MSType, "Master")
 
-RegisterGroupName = input("What is the name of the register group: ")
+report = template_1.format(DeviceName=DeviceName, MSType=MSType)
 
-report = template_1.format(DeviceName=DeviceName, MSType=MSType, RegisterGroupName=RegisterGroupName)
+# nodo = root.find('Nodo')
 
-nodo = root.find('Nodo')
-
-if nodo is not None:
+for nodo in root.findall('Nodo'):
+    RegisterGroupName = input("Enter the name of the register group: ")
+    report += template_2.format(RegisterGroupName=RegisterGroupName)
     counter = 0
     for variable in nodo.findall('Variabile'):
         counter += 1
@@ -86,10 +88,11 @@ if nodo is not None:
         #           print(e)
         # TypeMapping = {1: "modbus.point.AnalogInput", 2: "modbus.point.AnalogOutput"}
         # TypeStr = TypeMapping.get(Type)
-        report += template_2.format(Description=Description, Name=Name, Type=TypeStr, ModReg=int(ModReg)+1, RegType=RegType)
+        report += template_3.format(Description=Description, Name=Name, Type=TypeStr, ModReg=int(ModReg)+1, RegType=RegType)
+    report +='''     </OI>'''
+    
 
 report += ''' 
-        </OI>
       </OI>
 </ExportedObjects>
 
