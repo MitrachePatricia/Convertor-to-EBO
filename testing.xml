@@ -1,6 +1,0 @@
-<M-Bus_Network>
-	<Nodo Node_Enable="1" ID_Primary="0" ID_Secondary="28381404" Descrizione="" Send_SND_NKE="0" Reset_App="0"><Variabile Position="3" Enable="1" Desc="Time Point U0S1T0" Type="20" VIF_ASCII="" Fun_Field="0" Length="0" ModReg="5" Dim="1" Unit="0" StoNumber="1" Tariff="0" VIFE="0" ModScale="0" BCDtoINT="0" SWAP="0"/>
-		<Variabile Position="4" Enable="1" Desc="Volume m3 U0S1T0" Type="2" VIF_ASCII="" Fun_Field="0" Length="0" ModReg="6" Dim="2" Unit="0" StoNumber="1" Tariff="0" VIFE="0" ModScale="0" BCDtoINT="0" SWAP="0"/>
-    </Nodo>
-</M-Bus_Network>
-<!--SW67031_VERSION = 4.007-->
